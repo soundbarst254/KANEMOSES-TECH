@@ -30556,7 +30556,7 @@
 #KANEMOSES TECH
 
 <p align="center">
-  <a href="https://github.com/soundbarst254/KANEMOSES-TECH"><img src="http://readme-typing-svg.herokuapp.com?color=red&center=true&vCenter=true&multiline=false&lines=Mr+Hacker+Whatsapp+Bot;Developed+by+Marisel;Give+star+and+forks+this+Repo+🌟" alt="EthixReadme"></a>
+  <a href="https://github.com/soundbarst254/KANEMOSES-TECH"><img src="http://readme-typing-svg.herokuapp.com?color=red&center=true&vCenter=true&multiline=false&lines=Whatsapp+Bot;Developed+by+Marisel;Give+star+and+forks+this+Repo+🌟" alt="EthixReadme"></a>
 </p>
 
 ## Getting Started
@@ -30593,10 +30593,10 @@ Deploying the bot to Heroku is simple and straightforward. Follow these steps:
 
    Once your Heroku account is ready, deploy the bot by clicking the button below:
 
-[![Find On Whatsapp ](https://img.shields.io/badge/➤Click-Here-red.svg)](https://dashboard.heroku.com/new?template=https://github.com/MR-HACKER-XMD/Killerd)
+[![Find On Whatsapp ](https://img.shields.io/badge/➤Click-Here-red.svg)](https://dashboard.heroku.com/new?template=https://github.com/soundbarst254/KANEMOSES-TECH)
 
 ### Supporters I Love You
-[![Stargazers repo roster for @betingrich3/Mercedes](http://reporoster.com/stars/dark/betingrich3/Mercedes)](https://github.com/betingrich3/Mercedes/stargazers)
+[![Stargazers repo roster for @betingrich3/Mercedes](http://reporoster.com/stars/dark/soundbarst254/KANEMOSES-TECH)](https://github.com/betingrich3/Mercedes/stargazers)
      
 [![Forkers repo roster for @betingrich3/Mercedes](http://reporoster.com/forks/dark/betingrich3/Mercedes)](https://github.com/betingrich3/Mercedes/network/members)
 
@@ -30625,7 +30625,7 @@ You can also deploy the bot directly on your Android device using Termux. Here�
    Clone the forked repository using the following command:
 
    ```bash
-   git clone https://github.com/betingrich3/Mercedes.git
+   git clone https://github.com/soundbarst254/KANEMOSES-TECH.git
    ```
 
 4. **Navigate to the Project Directory:**
