@@ -30553,128 +30553,172 @@
 
 
 
-#KANEMOSES TECH
 
-<p align="center">
-  <a href="https://github.com/soundbarst254/KANEMOSES-TECH"><img src="http://readme-typing-svg.herokuapp.com?color=red&center=true&vCenter=true&multiline=false&lines=Mr+Hacker+Whatsapp+Bot;Developed+by+Marisel;Give+star+and+forks+this+Repo+🌟" alt="EthixReadme"></a>
-</p>
 
-## Getting Started
 
-To get started with Kanemoses tech, follow these steps:
 
-### 1. Fork This Repository
 
-Start by forking this repository to your own GitHub account. Click the button below to fork:
+import dotenv from 'dotenv';
+dotenv.config();
 
-<a href='https://github.com/betingrich3/Mercedes/fork' target="_blank"><img alt='Fork repo' src='https://img.shields.io/badge/Fork This Repo-black?style=for-the-badge&logo=git&logoColor=white'/></a>
+import {
+    makeWASocket,
+    Browsers,
+    fetchLatestBaileysVersion,
+    DisconnectReason,
+    useMultiFileAuthState,
+} from '@whiskeysockets/baileys';
+import { Handler, Callupdate, GroupUpdate } from './src/event/index.js';
+import express from 'express';
+import pino from 'pino';
+import fs from 'fs';
+import NodeCache from 'node-cache';
+import path from 'path';
+import chalk from 'chalk';
+import moment from 'moment-timezone';
+import axios from 'axios';
+import config from './config.cjs';
+import pkg from './lib/autoreact.cjs';
+const { emojis, doReact } = pkg;
 
-### 2. Get Session ID via Pair Code
+const sessionName = "session";
+const app = express();
+const orange = chalk.bold.hex("#FFA500");
+const lime = chalk.bold.hex("#32CD32");
+let useQR = false;
+let initialConnection = true;
+const PORT = process.env.PORT || 3000;
 
-You'll need a session ID to run the bot. Click the button below to obtain your session ID:
+const MAIN_LOGGER = pino({
+    timestamp: () => `,"time":"${new Date().toJSON()}"`
+});
+const logger = MAIN_LOGGER.child({});
+logger.level = "trace";
 
-<a href='https://professional-kitty-goutammallick516-86803e18.koyeb.app' target="_blank"><img alt='Get Session ID' src='https://img.shields.io/badge/Click here to get your session id-black?style=for-the-badge&logo=opencv&logoColor=red'/></a>
+const msgRetryCounterCache = new NodeCache();
 
-## Deployment Options
+const __filename = new URL(import.meta.url).pathname;
+const __dirname = path.dirname(__filename);
 
-You can deploy the bot using two methods: **Heroku** or **Termux**. Choose the method that suits you best.
+const sessionDir = path.join(__dirname, 'session');
+const credsPath = path.join(sessionDir, 'creds.json');
 
-### Deploy to Heroku
+if (!fs.existsSync(sessionDir)) {
+    fs.mkdirSync(sessionDir, { recursive: true });
+}
 
-Deploying the bot to Heroku is simple and straightforward. Follow these steps:
+async function downloadSessionData() {
+    if (!config.SESSION_ID) {
+        console.error('Please add your session to SESSION_ID env !!');
+        return false;
+    }
+    const sessdata = config.SESSION_ID.split("Ethix-MD&")[1];
+    const url = `https://pastebin.com/raw/${sessdata}`;
+    try {
+        const response = await axios.get(url);
+        const data = typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+        await fs.promises.writeFile(credsPath, data);
+        console.log("🔒 Session Successfully Loaded !!");
+        return true;
+    } catch (error) {
+       // console.error('Failed to download session data:', error);
+        return false;
+    }
+}
 
-1. **Create a Heroku Account:**
+async function start() {
+    try {
+        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
+        const { version, isLatest } = await fetchLatestBaileysVersion();
+        console.log(`Mercedes using WA v${version.join('.')}, isLatest: ${isLatest}`);
+        
+        const Matrix = makeWASocket({
+            version,
+            logger: pino({ level: 'silent' }),
+            printQRInTerminal: useQR,
+            browser: ["Ethix-MD", "safari", "3.3"],
+            auth: state,
+            getMessage: async (key) => {
+                if (store) {
+                    const msg = await store.loadMessage(key.remoteJid, key.id);
+                    return msg.message || undefined;
+                }
+                return { conversation: "Mercedes whatsapp user bot" };
+            }
+        });
 
-   If you don't already have a Heroku account, create one by clicking the button below:
+        Matrix.ev.on('connection.update', (update) => {
+            const { connection, lastDisconnect } = update;
+            if (connection === 'close') {
+                if (lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut) {
+                    start();
+                }
+            } else if (connection === 'open') {
+                if (initialConnection) {
+                    console.log(chalk.green("KANEMOSES TECH CONNECTED"));
+                    Matrix.sendMessage(Matrix.user.id, { text: `KANEMOSES TECH CONNECTED` });
+                    initialConnection = false;
+                } else {
+                    console.log(chalk.blue("♻️ Connection reestablished after restart."));
+                }
+            }
+        });
 
-   <a href='https://signup.heroku.com/' target="_blank"><img alt='Heroku' src='https://img.shields.io/badge/-Create-black?style=for-the-badge&logo=heroku&logoColor=red'/></a>
-   
-2. **Deploy the Bot:**
+        Matrix.ev.on('creds.update', saveCreds);
 
-   Once your Heroku account is ready, deploy the bot by clicking the button below:
+        Matrix.ev.on("messages.upsert", async chatUpdate => await Handler(chatUpdate, Matrix, logger));
+        Matrix.ev.on("call", async (json) => await Callupdate(json, Matrix));
+        Matrix.ev.on("group-participants.update", async (messag) => await GroupUpdate(Matrix, messag));
 
-[![Find On Whatsapp ](https://img.shields.io/badge/➤Click-Here-red.svg)](https://dashboard.heroku.com/new?template=https://github.com/MR-HACKER-XMD/Killerd)
+        if (config.MODE === "public") {
+            Matrix.public = true;
+        } else if (config.MODE === "private") {
+            Matrix.public = false;
+        }
 
-### Supporters I Love You
-[![Stargazers repo roster for @betingrich3/Mercedes](http://reporoster.com/stars/dark/betingrich3/Mercedes)](https://github.com/betingrich3/Mercedes/stargazers)
-     
-[![Forkers repo roster for @betingrich3/Mercedes](http://reporoster.com/forks/dark/betingrich3/Mercedes)](https://github.com/betingrich3/Mercedes/network/members)
+        Matrix.ev.on('messages.upsert', async (chatUpdate) => {
+            try {
+                const mek = chatUpdate.messages[0];
+                if (!mek.key.fromMe && config.AUTO_REACT) {
+                    console.log(mek);
+                    if (mek.message) {
+                        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                        await doReact(randomEmoji, mek, Matrix);
+                    }
+                }
+            } catch (err) {
+                console.error('Error during auto reaction:', err);
+            }
+        });
+    } catch (error) {
+        console.error('Critical Error:', error);
+        process.exit(1);
+    }
+}
 
-Deploy to Termux
+async function init() {
+    if (fs.existsSync(credsPath)) {
+        console.log("🔒 Session file found, proceeding without QR code.");
+        await start();
+    } else {
+        const sessionDownloaded = await downloadSessionData();
+        if (sessionDownloaded) {
+            console.log("🔒 Session downloaded, starting bot.");
+            await start();
+        } else {
+            console.log("No session found or downloaded, QR code will be printed for authentication.");
+            useQR = true;
+            await start();
+        }
+    }
+}
 
-You can also deploy the bot directly on your Android device using Termux. Here’s how:
+init();
 
-1. **Install Termux:**
+app.get('/', (req, res) => {
+    res.send('Hello World!');
+});
 
-   If you don't have Termux installed, download it from the Google Play Store or F-Droid.
-
-   - [Google Play Store](https://play.google.com/store/apps/details?id=com.termux)
-   - [F-Droid](https://f-droid.org/en/packages/com.termux/)
-
-2. **Update and Install Required Packages:**
-
-   Open Termux and run the following commands to update packages and install required dependencies:
-
-   ```bash
-   pkg update && pkg upgrade
-   pkg install git nodejs -y
-   ```
-
-3. **Clone the Repository:**
-
-   Clone the forked repository using the following command:
-
-   ```bash
-   git clone https://github.com/betingrich3/Mercedes.git
-   ```
-
-4. **Navigate to the Project Directory:**
-
-   Change into the project directory:
-
-   ```bash
-   cd Mercedes
-   ```
-
-5. **Set the `SESSION_ID` in the `.env` File:**
-
-   To set the `SESSION_ID`, you need to create or edit the `.env` file in the project directory.
-
-   - **Create/Edit the `.env` File:**
-
-     Open (or create) the `.env` file using a text editor like `nano`:
-
-     ```bash
-     nano .env
-     ```
-
-   - **Add the `SESSION_ID` Variable:**
-
-     Add the following line to the `.env` file:
-
-     ```bash
-     SESSION_ID='paste your-session-id-here'
-     ```
-
-     Replace `'your-session-id-here'` with the actual session ID you obtained.
-
-   - **Save and Exit:**
-
-     If using `nano`, save the changes by pressing `CTRL + X`, then `Y`, and then `Enter` to exit.
-
-6. **Install Node Modules:**
-
-   Install the required Node.js modules:
-
-   ```bash
-   npm install
-   ```
-
-7. **Start the Bot:**
-
-   Finally, start the bot with the following command:
-
-   ```bash
-   node .
-   ```
-   
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
